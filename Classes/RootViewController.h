@@ -7,8 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FlickrReader.h"
 
-@interface RootViewController : UITableViewController {
+@interface RootViewController : UITableViewController <FlickrReaderDelegate>
+{
+  NSMutableArray *items;
+  FlickrReader   *flickr;
 }
+
+@property (nonatomic, retain) NSMutableArray *items;
+@property (nonatomic, retain) FlickrReader    *flickr;
 
 @end

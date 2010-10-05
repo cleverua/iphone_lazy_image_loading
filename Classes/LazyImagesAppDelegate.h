@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+#define FLICKR_API_KEY       @"7288fdd3db1685f784f03b8892784573"
+#define FLICKR_SECRET_KEY    @"7fd9d03aae03ba05"
+#define FLICKR_REST_API_ROOT @"http://api.flickr.com/services/rest/"
+#define FLICKR_SEARCH_METHOD @"flickr.photos.search"
+#define PER_PAGE             10
+
 @interface LazyImagesAppDelegate : NSObject <UIApplicationDelegate> {
     
     UIWindow *window;

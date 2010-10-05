@@ -7,22 +7,26 @@
 //
 
 #import "RootViewController.h"
-
+#import "FlickrReader.h"
+#import "MiscHeler.h"
+#import "FlickrPhoto.h"
+#import "LazyImagesAppDelegate.h"
 
 @implementation RootViewController
 
+@synthesize items, flickr;
 
 #pragma mark -
 #pragma mark View lifecycle
 
-/*
-- (void)viewDidLoad {
-    [super viewDidLoad];
 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+- (void)viewDidLoad 
+{
+  [super viewDidLoad];
+
+  items = [[NSMutableArray alloc] init];
 }
-*/
+
 
 /*
 - (void)viewWillAppear:(BOOL)animated {
@@ -65,25 +69,55 @@
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 0;
+    return [items count] + 2;
 }
 
 
 // Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath 
+{    
+  static NSString *SearchCellIdentifier   = @"SearchCell";
+  static NSString *FlickrCellIdentifier   = @"FlickrCell";
+  static NSString *NextPageCellIdentifier = @"NextPageCell";
     
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+  UITableViewCell *cell;
+  
+  if (indexPath.row == 0) {
+    // search bar cell
+    cell = [tableView dequeueReusableCellWithIdentifier:SearchCellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+      cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:SearchCellIdentifier] autorelease];
+      UISearchBar *bar = [[UISearchBar alloc] initWithFrame:[tableView rectForRowAtIndexPath:indexPath]];
+      [cell.contentView addSubview:bar];
+      [bar release];
+    }
+  }
+  else if (indexPath.row > [items count]) 
+  {
+    cell = [tableView dequeueReusableCellWithIdentifier:NextPageCellIdentifier];
+    if (cell == nil) {
+      cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NextPageCellIdentifier] autorelease];
+      cell.textLabel.text = @"Loading Next Page...";
+    }
+    NSLog(@"Loading Next Page...");
+    
+    FlickrReader *reader = [[FlickrReader alloc] init];
+    self.flickr = reader;
+    [reader searchFor:@"cat" onPage:([items count]/PER_PAGE + 1) delegate:self];  
+    [reader release];    
+  }
+  else
+  {
+    cell = [tableView dequeueReusableCellWithIdentifier:FlickrCellIdentifier];
+    if (cell == nil) {
+      cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:FlickrCellIdentifier] autorelease];
     }
     
-	// Configure the cell.
-
-    return cell;
+    FlickrPhoto *photo = [items objectAtIndex:indexPath.row - 1];
+    cell.textLabel.text = photo.title;
+  }
+  return cell;
 }
-
 
 /*
 // Override to support conditional editing of the table view.
@@ -124,7 +158,6 @@
 }
 */
 
-
 #pragma mark -
 #pragma mark Table view delegate
 
@@ -139,6 +172,14 @@
 	 */
 }
 
+#pragma mark FlickrReader delegate
+
+-(void)dataReady:(FlickrReader *)sender
+{
+  NSLog(@"dataReady fired");
+  [self.items addObjectsFromArray:sender.items];
+  [self.tableView reloadData];
+}
 
 #pragma mark -
 #pragma mark Memory management
