@@ -111,14 +111,32 @@
     cell = [tableView dequeueReusableCellWithIdentifier:FlickrCellIdentifier];
     if (cell == nil) {
       cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:FlickrCellIdentifier] autorelease];
+      cell.textLabel.numberOfLines = 3;
     }
     
     FlickrPhoto *photo = [items objectAtIndex:indexPath.row - 1];
     cell.textLabel.text = photo.title;
+    if (photo.thumbnailImage == nil) 
+    {
+      cell.imageView.image = [UIImage imageNamed:@"Placeholder.png"];
+    }
+    else {
+      cell.imageView.image = photo.thumbnailImage;
+    }
+
   }
   return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  if (indexPath.row == 0) 
+    return 36;
+  else if (indexPath.row > [items count])
+    return 36;
+  else 
+    return 75+4;
+}
 /*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -197,8 +215,9 @@
 }
 
 - (void)viewDidUnload {
-    // Relinquish ownership of anything that can be recreated in viewDidLoad or on demand.
-    // For example: self.myOutlet = nil;
+  // Relinquish ownership of anything that can be recreated in viewDidLoad or on demand.
+  // For example: self.myOutlet = nil;
+  self.items = nil;
 }
 
 
