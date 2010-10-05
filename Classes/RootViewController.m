@@ -185,10 +185,15 @@
 #pragma mark Memory management
 
 - (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
+  // Releases the view if it doesn't have a superview.
+  [super didReceiveMemoryWarning];
     
-    // Relinquish ownership any cached data, images, etc that aren't in use.
+  // Relinquish ownership any cached data, images, etc that aren't in use.
+  for (FlickrPhoto *photo in self.items) 
+  {
+    photo.thumbnailImage = nil;
+    photo.mediumImage = nil;
+  }
 }
 
 - (void)viewDidUnload {

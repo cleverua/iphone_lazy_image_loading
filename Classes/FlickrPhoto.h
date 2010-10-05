@@ -16,6 +16,9 @@
   NSString  *secret;
   NSInteger server;
   NSString  *title;
+  
+  UIImage *thumbnailImage;
+  UIImage *mediumImage;
 }
 
 @property (nonatomic, assign) NSInteger photoId;
@@ -23,6 +26,9 @@
 @property (nonatomic, retain) NSString  *secret;
 @property (nonatomic, assign) NSInteger server;
 @property (nonatomic, retain) NSString  *title;
+
+@property (nonatomic, retain) UIImage   *thumbnailImage;
+@property (nonatomic, retain) UIImage   *mediumImage;
 
 - (NSString *)thumbnailPhotoUrl;
 - (NSString *)mediumPhotoUrl;
