@@ -71,6 +71,7 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
+  NSLog(@"FlickrReader#connection:didReceiveData");
   [receivedData appendData:data];
 }
 

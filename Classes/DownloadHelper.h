@@ -7,27 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
-
-@protocol DownloadHelperDelegate
-
-@required
-
-- (void)downloadSuccessful:(NSIndexPath *)indexPath data:(NSData *)data;
-
-@end
-
+#import "DownloadableImage.h"
 
 @interface DownloadHelper : NSObject 
 {
-  NSString    *downloadUrl;
-  id           delegate;
-  NSIndexPath *indexPath;
+  DownloadableImage *image;
   
   NSMutableData   *downloadedData;
   NSURLConnection *connection;
 }
 
-- (id)initWithUrl:(NSString *)url delegate:(id <DownloadHelperDelegate>)delegate indexPath:(NSIndexPath *)indexPath;
+- (id)initWithDownloadedImage:(DownloadableImage *)image;
 - (void)startDownload;
 - (void)cancel;
 

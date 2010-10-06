@@ -9,20 +9,19 @@
 #import "TableViewController.h"
 #import "FlickrReader.h"
 #import "MiscHeler.h"
-#import "Thumbnailable.h"
 #import "LazyImagesAppDelegate.h"
+#import "DownloadableCell.h"
+#import "FlickrPhoto.h"
 
 @interface TableViewController(PrivateMethods)
 
-- (void)startIconDownload:(id <Thumbnailable>)photo forIndexPath:(NSIndexPath *)indexPath;
 - (void)loadImagesForOnscreenRows;
 
 @end
 
-
 @implementation TableViewController
 
-@synthesize items, flickr;
+@synthesize items, flickr, downloaders;
 
 static const NSInteger SEARCH_SECTION_INDEX = 0;
 static const NSInteger ITEMS_SECTION_INDEX  = 1;
@@ -122,26 +121,16 @@ static const NSInteger RELOAD_SECTION_INDEX = 2;
   }
   else
   {
-    cell = [tableView dequeueReusableCellWithIdentifier:FlickrCellIdentifier];
+    cell = (DownloadableCell *)[tableView dequeueReusableCellWithIdentifier:FlickrCellIdentifier];
     if (cell == nil) {
-      cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:FlickrCellIdentifier] autorelease];
+      cell = [[[DownloadableCell alloc] initWithTableView:self.tableView style:UITableViewCellStyleDefault reuseIdentifier:FlickrCellIdentifier] autorelease];
       cell.textLabel.numberOfLines = 3;
     }
-    
-    id <Thumbnailable > photo = [items objectAtIndex:indexPath.row];
-    cell.textLabel.text = [photo title];
-    if (photo.thumbnailImage == nil) 
-    {
-      cell.imageView.image = [UIImage imageNamed:@"Placeholder.png"];
-      if (self.tableView.dragging == NO && self.tableView.decelerating == NO)
-      {
-        [self startIconDownload:photo forIndexPath:indexPath];
-      }      
-    }
-    else {
-      cell.imageView.image = photo.thumbnailImage;
-    }
 
+    FlickrPhoto *photo = [items objectAtIndex:indexPath.row];
+    cell.textLabel.text = [photo title];
+    
+    ((DownloadableCell *)cell).thumbnail = photo.thumbnail;
   }
   return cell;
 }
@@ -225,6 +214,21 @@ static const NSInteger RELOAD_SECTION_INDEX = 2;
   [self loadImagesForOnscreenRows];
 }
 
+// this method is used in case the user scrolled into a set of cells that don't have their app icons yet
+- (void)loadImagesForOnscreenRows
+{
+  if ([items count] > 0)
+  {
+    for (DownloadableCell *cell in [self.tableView visibleCells])
+    {    
+      if ([cell isMemberOfClass:[DownloadableCell class]] && (cell.thumbnail.image == nil))
+      {
+        [cell.thumbnail download];
+      }
+    }
+  }
+}
+
 #pragma mark FlickrReader delegate
 
 -(void)dataReady:(FlickrReader *)sender
@@ -234,63 +238,6 @@ static const NSInteger RELOAD_SECTION_INDEX = 2;
   [self.tableView reloadData];
 }
 
-#pragma mark DownloadHelper delegate
-
-- (void)downloadSuccessful:(NSIndexPath *)indexPath data:(NSData *)data
-{
-  id <Thumbnailable> photo = [self.items objectAtIndex:indexPath.row];
-  
-  UIImage *image = [[UIImage alloc] initWithData:data];
-  if (image.size.width != THUMBNAIL_HEIGHT && image.size.height != THUMBNAIL_HEIGHT)
-  {
-    CGSize itemSize = CGSizeMake(THUMBNAIL_HEIGHT, THUMBNAIL_HEIGHT);
-    UIGraphicsBeginImageContext(itemSize);
-    CGRect imageRect = CGRectMake(0.0, 0.0, itemSize.width, itemSize.height);
-    [image drawInRect:imageRect];
-    photo.thumbnailImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-  }
-  else {
-    photo.thumbnailImage = image;  
-  }
-  [image release];
-  
-  UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-  cell.imageView.image = photo.thumbnailImage;
-}
-
-- (void)startIconDownload:(id <Thumbnailable>)photo forIndexPath:(NSIndexPath *)indexPath
-{
-  DownloadHelper * downloader = [downloaders objectForKey:indexPath];
-  if (downloader == nil) {
-    downloader = [[DownloadHelper alloc] initWithUrl:[photo thumbnailUrl] 
-                                            delegate:self 
-                                           indexPath:indexPath];    
-    [downloaders setObject:downloader forKey:indexPath];
-    
-    [downloader startDownload];
-    [downloader release];
-  }
-}
-
-- (void)loadImagesForOnscreenRows
-{
-  if ([items count] > 0)
-  {
-    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
-    for (NSIndexPath *indexPath in visiblePaths)
-    {
-        id <Thumbnailable> photo = [items objectAtIndex:indexPath.row];
-        
-        if (photo.thumbnailImage == nil) // avoid the app icon download if the app already has an icon
-        {
-          [self startIconDownload:photo forIndexPath:indexPath];
-        }
-    }
-  }
-}
-
-
 #pragma mark -
 #pragma mark Memory management
 
@@ -299,10 +246,9 @@ static const NSInteger RELOAD_SECTION_INDEX = 2;
   [super didReceiveMemoryWarning];
     
   // Relinquish ownership any cached data, images, etc that aren't in use.
-  for (id <Thumbnailable> photo in self.items) 
+  for (FlickrPhoto *photo in self.items) 
   {
-    photo.thumbnailImage = nil;
-    [photo setMediumImage:nil];
+    photo.thumbnail.image = nil;
   }
 }
 

@@ -8,11 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "FlickrReader.h"
-#import "DownloadHelper.h"
 
 #define THUMBNAIL_HEIGHT 75
 
-@interface TableViewController : UITableViewController <UITableViewDataSource, FlickrReaderDelegate, DownloadHelperDelegate>
+@interface TableViewController : UITableViewController <UITableViewDataSource, FlickrReaderDelegate>
 {
   NSMutableArray      *items;
   NSMutableDictionary *downloaders;
@@ -21,5 +20,6 @@
 
 @property (nonatomic, retain) NSMutableArray *items;
 @property (nonatomic, retain) FlickrReader    *flickr;
+@property (nonatomic, readonly) NSMutableDictionary *downloaders;
 
 @end

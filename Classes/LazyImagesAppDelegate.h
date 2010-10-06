@@ -14,14 +14,18 @@
 #define FLICKR_SEARCH_METHOD @"flickr.photos.search"
 #define PER_PAGE             10
 
-@interface LazyImagesAppDelegate : NSObject <UIApplicationDelegate> {
-    
-    UIWindow *window;
-    UINavigationController *navigationController;
+#define DELEGATE ((LazyImagesAppDelegate *)[[UIApplication sharedApplication] delegate])
+
+@interface LazyImagesAppDelegate : NSObject <UIApplicationDelegate> 
+{    
+  UIWindow *window;
+  UINavigationController *navigationController;
+  NSMutableDictionary    *downloaders;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UINavigationController *navigationController;
+@property (nonatomic, readonly) NSMutableDictionary  *downloaders;
 
 @end
 

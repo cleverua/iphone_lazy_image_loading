@@ -8,20 +8,46 @@
 
 #import "FlickrPhoto.h"
 
+
+@interface FlickrPhoto(PrivateMethods)
+
+- (NSString *)mediumUrl;
+
+@end
+
+
 @implementation FlickrPhoto
 
-@synthesize farm, photoId, owner, secret, server, title, thumbnailImage, mediumImage;
+@synthesize farm, photoId, owner, secret, server, title;
 
 static NSString * photoFormatString = @"http://farm%@.static.flickr.com/%@/%@_%@_%@.jpg";
 
-- (NSString *)thumbnailUrl
+- (DownloadableImage *)thumbnail
 {
-  return [NSString stringWithFormat:photoFormatString, self.farm, self.server, self.photoId, self.secret, @"s"];
+  if (thumbnail == nil) 
+  {
+    NSString *thumbUrl = [[NSString alloc] initWithFormat:photoFormatString, self.farm, self.server, self.photoId, self.secret, @"s"];
+
+    thumbnail = [[DownloadableImage alloc] initWithUrl:thumbUrl andSize:CGSizeMake(75.0, 75.0)];
+
+    thumbnail.url = thumbUrl;
+  }
+  return thumbnail;
 }
+
+#pragma mark PrivateMethods
 
 - (NSString *)mediumUrl
 {
   return [NSString stringWithFormat:photoFormatString, self.farm, self.server, self.photoId, self.secret, @"m"];
+}
+
+#pragma mark Memory Management
+
+- (void)dealloc
+{
+  [thumbnail release];
+  [super dealloc];
 }
 
 @end

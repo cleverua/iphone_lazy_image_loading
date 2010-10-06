@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Thumbnailable.h"
+#import "DownloadableImage.h"
 
-@interface FlickrPhoto : NSObject <Thumbnailable>
+@interface FlickrPhoto : NSObject
 {
   NSString  *photoId;
   NSString  *owner;
@@ -18,8 +18,7 @@
   NSString  *title;
   NSString  *farm;
   
-  UIImage *thumbnailImage;
-  UIImage *mediumImage;
+  DownloadableImage  *thumbnail;
 }
 
 @property (nonatomic, retain) NSString  *photoId;
@@ -29,11 +28,6 @@
 @property (nonatomic, retain) NSString  *title;
 @property (nonatomic, retain) NSString  *farm;
 
-
-@property (nonatomic, retain) UIImage   *thumbnailImage;
-@property (nonatomic, retain) UIImage   *mediumImage;
-
-- (NSString *)thumbnailUrl;
-- (NSString *)mediumUrl;
+@property (nonatomic, readonly) DownloadableImage  *thumbnail;
 
 @end

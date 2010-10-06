@@ -11,23 +11,23 @@
 
 @implementation DownloadHelper
 
-- (id)initWithUrl:(NSString *)url delegate:(id <DownloadHelperDelegate>)theDelegate indexPath:(NSIndexPath *)theIndexPath
+- (id)initWithDownloadedImage:(DownloadableImage *)downloadableImage
 {
+  NSLog(@"initWithImage");
   if (self = [super init]) {
-    downloadUrl = [url retain];
-    delegate    = theDelegate;
-    indexPath      = theIndexPath;
+    image = downloadableImage;
+    [image retain];
   }
   return self;
 }
 
 - (void)startDownload
 {
-  NSLog(@"startDownload %@", downloadUrl);
+  NSLog(@"startDownload %@", image.url);
   
   downloadedData = [[NSMutableData alloc] init];
 
-  NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:downloadUrl]];
+  NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:image.url]];
   connection = [[NSURLConnection alloc]initWithRequest:request delegate:self];
   [request release];  
 }
@@ -35,7 +35,6 @@
 - (void)cancel
 {
   [connection cancel];
-  delegate = nil;
 }
 
 #pragma mark Connections
@@ -48,8 +47,8 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)conn
 {
   NSLog(@"connectionDidFinishLoading");
-    
-  [delegate downloadSuccessful:indexPath data:downloadedData];
+  
+  [image imageDownloaded:downloadedData];
 }
 
 - (void)connection:(NSURLConnection *)conn didFailWithError:(NSError *)error
@@ -62,7 +61,7 @@
 
 - (void)dealloc
 {
-  [downloadUrl release];
+  [image release];
   
   [super dealloc];
 }

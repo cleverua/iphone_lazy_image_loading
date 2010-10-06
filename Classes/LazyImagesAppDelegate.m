@@ -7,13 +7,14 @@
 //
 
 #import "LazyImagesAppDelegate.h"
-#import "RootViewController.h"
+#import "TableViewController.h"
 
 
 @implementation LazyImagesAppDelegate
 
 @synthesize window;
 @synthesize navigationController;
+@synthesize downloaders;
 
 
 #pragma mark -
@@ -21,13 +22,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     
-    // Override point for customization after application launch.
-    
-    // Add the navigation controller's view to the window and display.
-    [window addSubview:navigationController.view];
-    [window makeKeyAndVisible];
+  // Override point for customization after application launch.
+  downloaders = [[NSMutableDictionary alloc] init];
+  // Add the navigation controller's view to the window and display.
+  [window addSubview:navigationController.view];
+  [window makeKeyAndVisible];
 
-    return YES;
+  return YES;
 }
 
 
@@ -82,6 +83,7 @@
 - (void)dealloc {
 	[navigationController release];
 	[window release];
+  [downloaders release];
 	[super dealloc];
 }
 
