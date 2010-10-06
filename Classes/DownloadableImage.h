@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+static NSString *ImageDownloadedNotificationName = @"ImageDownloaded";
 
 @interface DownloadableImage : NSObject 
 {

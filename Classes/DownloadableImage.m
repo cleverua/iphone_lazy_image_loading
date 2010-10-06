@@ -38,7 +38,6 @@
 
 - (void)imageDownloaded:(NSData *)data
 {  
-  NSLog(@"imageDownloaded");
   UIImage *downloadedImage = [[UIImage alloc] initWithData:data];
   if (downloadedImage.size.width != size.width && downloadedImage.size.height != size.height)
   {
@@ -54,7 +53,7 @@
   }
   [downloadedImage release];
   
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"ImageDownloaded" object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:ImageDownloadedNotificationName object:self];
 }
 
 @end

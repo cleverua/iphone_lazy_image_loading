@@ -32,9 +32,9 @@
       self.imageView.image = [UIImage imageNamed:@"Placeholder.png"];
       [[NSNotificationCenter defaultCenter] addObserver:self 
                                                selector:@selector(thumbnailDownloaded:) 
-                                                   name:@"ImageDownloaded" 
+                                                   name:ImageDownloadedNotificationName 
                                                  object:th];
-      if ((tableView.dragging == NO) && (tableView.decelerating == NO))
+      if (!tableView.isDragging && !tableView.isDecelerating)
       {
         [th download];
       }      
@@ -62,7 +62,7 @@
 - (void)prepareForReuse
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self 
-                                                  name:@"ImageDownloaded" 
+                                                  name:ImageDownloadedNotificationName 
                                                 object:thumbnail];
   [super prepareForReuse];
 }
