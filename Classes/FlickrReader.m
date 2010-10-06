@@ -27,6 +27,7 @@
                           FLICKR_SEARCH_METHOD, @"method",
                           FLICKR_API_KEY, @"api_key",
                           text, @"text",
+                          @"1", @"privacy_filter",
                           [NSString stringWithFormat:@"%i", PER_PAGE], @"per_page",
                           [NSString stringWithFormat:@"%i", page], @"page",
                           nil];
@@ -105,11 +106,21 @@
   else if([elementName isEqualToString:@"photo"])
   {
     FlickrPhoto *photo = [[FlickrPhoto alloc] init];
-    photo.photoId = [[attributeDict objectForKey:@"id"] intValue];
-    photo.server = [[attributeDict objectForKey:@"server"] intValue];
     
     NSString *str = [[attributeDict objectForKey:@"owner"] copy];
     photo.owner = str;
+    [str release];
+
+    str = [[attributeDict objectForKey:@"id"] copy];
+    photo.photoId = str;
+    [str release];
+    
+    str = [[attributeDict objectForKey:@"server"] copy];
+    photo.server = str;
+    [str release];
+    
+    str = [[attributeDict objectForKey:@"farm"] copy];
+    photo.farm = str;
     [str release];
     
     str = [[attributeDict objectForKey:@"secret"] copy];

@@ -10,18 +10,18 @@
 
 @implementation FlickrPhoto
 
-@synthesize photoId, owner, secret, server, title, thumbnailImage, mediumImage;
+@synthesize farm, photoId, owner, secret, server, title, thumbnailImage, mediumImage;
 
-static NSString * photoFormatString = @"http://farm%i.static.flickr.com/%i/%i_%@_%@.jpg";
+static NSString * photoFormatString = @"http://farm%@.static.flickr.com/%@/%@_%@_%@.jpg";
 
-- (NSString *)thumbnailPhotoUrl
+- (NSString *)thumbnailUrl
 {
-  return [NSString stringWithFormat:photoFormatString, 1, self.server, self.photoId, self.secret, @"s"];
+  return [NSString stringWithFormat:photoFormatString, self.farm, self.server, self.photoId, self.secret, @"s"];
 }
 
-- (NSString *)mediumPhotoUrl
+- (NSString *)mediumUrl
 {
-  return [NSString stringWithFormat:photoFormatString, 1, self.server, self.photoId, self.secret, @"m"];
+  return [NSString stringWithFormat:photoFormatString, self.farm, self.server, self.photoId, self.secret, @"m"];
 }
 
 @end

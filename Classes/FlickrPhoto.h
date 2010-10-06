@@ -7,30 +7,33 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Thumbnailable.h"
 
-
-@interface FlickrPhoto : NSObject 
+@interface FlickrPhoto : NSObject <Thumbnailable>
 {
-  NSInteger photoId;
+  NSString  *photoId;
   NSString  *owner;
   NSString  *secret;
-  NSInteger server;
+  NSString  *server;
   NSString  *title;
+  NSString  *farm;
   
   UIImage *thumbnailImage;
   UIImage *mediumImage;
 }
 
-@property (nonatomic, assign) NSInteger photoId;
+@property (nonatomic, retain) NSString  *photoId;
 @property (nonatomic, retain) NSString  *owner;
 @property (nonatomic, retain) NSString  *secret;
-@property (nonatomic, assign) NSInteger server;
+@property (nonatomic, retain) NSString  *server;
 @property (nonatomic, retain) NSString  *title;
+@property (nonatomic, retain) NSString  *farm;
+
 
 @property (nonatomic, retain) UIImage   *thumbnailImage;
 @property (nonatomic, retain) UIImage   *mediumImage;
 
-- (NSString *)thumbnailPhotoUrl;
-- (NSString *)mediumPhotoUrl;
+- (NSString *)thumbnailUrl;
+- (NSString *)mediumUrl;
 
 @end

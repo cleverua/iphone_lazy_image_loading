@@ -6,15 +6,27 @@
 //  Copyright CleverUA 2010. All rights reserved.
 //
 
-#import "RootViewController.h"
+#import "TableViewController.h"
 #import "FlickrReader.h"
 #import "MiscHeler.h"
-#import "FlickrPhoto.h"
+#import "Thumbnailable.h"
 #import "LazyImagesAppDelegate.h"
 
-@implementation RootViewController
+@interface TableViewController(PrivateMethods)
+
+- (void)startIconDownload:(id <Thumbnailable>)photo forIndexPath:(NSIndexPath *)indexPath;
+- (void)loadImagesForOnscreenRows;
+
+@end
+
+
+@implementation TableViewController
 
 @synthesize items, flickr;
+
+static const NSInteger SEARCH_SECTION_INDEX = 0;
+static const NSInteger ITEMS_SECTION_INDEX  = 1;
+static const NSInteger RELOAD_SECTION_INDEX = 2;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -62,14 +74,16 @@
 #pragma mark Table view data source
 
 // Customize the number of sections in the table view.
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView 
+{
+  return 3;
 }
 
 
 // Customize the number of rows in the table view.
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [items count] + 2;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
+{
+  return (section == ITEMS_SECTION_INDEX) ? [items count] : 1;
 }
 
 
@@ -82,7 +96,7 @@
     
   UITableViewCell *cell;
   
-  if (indexPath.row == 0) {
+  if (indexPath.section == SEARCH_SECTION_INDEX) {
     // search bar cell
     cell = [tableView dequeueReusableCellWithIdentifier:SearchCellIdentifier];
     if (cell == nil) {
@@ -92,7 +106,7 @@
       [bar release];
     }
   }
-  else if (indexPath.row > [items count]) 
+  else if (indexPath.section == RELOAD_SECTION_INDEX) 
   {
     cell = [tableView dequeueReusableCellWithIdentifier:NextPageCellIdentifier];
     if (cell == nil) {
@@ -114,11 +128,15 @@
       cell.textLabel.numberOfLines = 3;
     }
     
-    FlickrPhoto *photo = [items objectAtIndex:indexPath.row - 1];
-    cell.textLabel.text = photo.title;
+    id <Thumbnailable > photo = [items objectAtIndex:indexPath.row];
+    cell.textLabel.text = [photo title];
     if (photo.thumbnailImage == nil) 
     {
       cell.imageView.image = [UIImage imageNamed:@"Placeholder.png"];
+      if (self.tableView.dragging == NO && self.tableView.decelerating == NO)
+      {
+        [self startIconDownload:photo forIndexPath:indexPath];
+      }      
     }
     else {
       cell.imageView.image = photo.thumbnailImage;
@@ -130,12 +148,12 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.row == 0) 
+  if (indexPath.section == SEARCH_SECTION_INDEX) 
     return 36;
-  else if (indexPath.row > [items count])
+  else if (indexPath.section == RELOAD_SECTION_INDEX)
     return 36;
   else 
-    return 75+4;
+    return THUMBNAIL_HEIGHT +4;
 }
 /*
 // Override to support conditional editing of the table view.
@@ -190,6 +208,23 @@
 	 */
 }
 
+#pragma mark -
+#pragma mark Deferred image loading (UIScrollViewDelegate)
+
+// Load images for all onscreen rows when scrolling is finished
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+  if (!decelerate)
+	{
+    [self loadImagesForOnscreenRows];
+  }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+  [self loadImagesForOnscreenRows];
+}
+
 #pragma mark FlickrReader delegate
 
 -(void)dataReady:(FlickrReader *)sender
@@ -199,6 +234,63 @@
   [self.tableView reloadData];
 }
 
+#pragma mark DownloadHelper delegate
+
+- (void)downloadSuccessful:(NSIndexPath *)indexPath data:(NSData *)data
+{
+  id <Thumbnailable> photo = [self.items objectAtIndex:indexPath.row];
+  
+  UIImage *image = [[UIImage alloc] initWithData:data];
+  if (image.size.width != THUMBNAIL_HEIGHT && image.size.height != THUMBNAIL_HEIGHT)
+  {
+    CGSize itemSize = CGSizeMake(THUMBNAIL_HEIGHT, THUMBNAIL_HEIGHT);
+    UIGraphicsBeginImageContext(itemSize);
+    CGRect imageRect = CGRectMake(0.0, 0.0, itemSize.width, itemSize.height);
+    [image drawInRect:imageRect];
+    photo.thumbnailImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+  }
+  else {
+    photo.thumbnailImage = image;  
+  }
+  [image release];
+  
+  UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+  cell.imageView.image = photo.thumbnailImage;
+}
+
+- (void)startIconDownload:(id <Thumbnailable>)photo forIndexPath:(NSIndexPath *)indexPath
+{
+  DownloadHelper * downloader = [downloaders objectForKey:indexPath];
+  if (downloader == nil) {
+    downloader = [[DownloadHelper alloc] initWithUrl:[photo thumbnailUrl] 
+                                            delegate:self 
+                                           indexPath:indexPath];    
+    [downloaders setObject:downloader forKey:indexPath];
+    
+    [downloader startDownload];
+    [downloader release];
+  }
+}
+
+- (void)loadImagesForOnscreenRows
+{
+  if ([items count] > 0)
+  {
+    NSArray *visiblePaths = [self.tableView indexPathsForVisibleRows];
+    for (NSIndexPath *indexPath in visiblePaths)
+    {
+        id <Thumbnailable> photo = [items objectAtIndex:indexPath.row];
+        
+        if (photo.thumbnailImage == nil) // avoid the app icon download if the app already has an icon
+        {
+          [self startIconDownload:photo forIndexPath:indexPath];
+        }
+    }
+  }
+}
+
+
 #pragma mark -
 #pragma mark Memory management
 
@@ -207,10 +299,10 @@
   [super didReceiveMemoryWarning];
     
   // Relinquish ownership any cached data, images, etc that aren't in use.
-  for (FlickrPhoto *photo in self.items) 
+  for (id <Thumbnailable> photo in self.items) 
   {
     photo.thumbnailImage = nil;
-    photo.mediumImage = nil;
+    [photo setMediumImage:nil];
   }
 }
 
