@@ -64,6 +64,8 @@
   if (receivedData != nil) {
     [receivedData release];
   }
+  self.items = nil;
+  self.status = nil;
   [super dealloc];
 }
 
@@ -91,7 +93,6 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict
 {
-  CFShow([NSString stringWithFormat:@"%@ -- %@", elementName, attributeDict]);
   if ([elementName isEqualToString:@"rsp"]) 
   {
     NSString *str = [[attributeDict objectForKey:@"stat"] copy];
@@ -107,12 +108,8 @@
   else if([elementName isEqualToString:@"photo"])
   {
     FlickrPhoto *photo = [[FlickrPhoto alloc] init];
-    
-    NSString *str = [[attributeDict objectForKey:@"owner"] copy];
-    photo.owner = str;
-    [str release];
 
-    str = [[attributeDict objectForKey:@"id"] copy];
+    NSString *str = [[attributeDict objectForKey:@"id"] copy];
     photo.photoId = str;
     [str release];
     
