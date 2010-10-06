@@ -38,6 +38,7 @@
 
 - (void)imageDownloaded:(NSData *)data
 {  
+  CFShow(@"imageDownloaded");
   UIImage *downloadedImage = [[UIImage alloc] initWithData:data];
   if (downloadedImage.size.width != size.width && downloadedImage.size.height != size.height)
   {
@@ -51,9 +52,28 @@
   else {
     self.image = downloadedImage;  
   }
+  CFShow(@"imageDownloaded - 2");
   [downloadedImage release];
+  CFShow(@"imageDownloaded - 3");
   
   [[NSNotificationCenter defaultCenter] postNotificationName:ImageDownloadedNotificationName object:self];
+  CFShow(@"imageDownloaded - end");
+}
+
+- (void)downloadDidFail
+{
+  [DELEGATE.downloaders removeObjectForKey:self.url];
+}
+
+- (void)dealloc
+{
+  DownloadHelper *downloader = [DELEGATE.downloaders objectForKey:self.url];
+  if (downloader != nil) {
+    [downloader cancel];
+  }
+  self.url = nil;
+  self.image = nil;
+  [super dealloc];
 }
 
 @end

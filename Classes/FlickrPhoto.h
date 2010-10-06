@@ -28,4 +28,6 @@
 
 @property (nonatomic, readonly) DownloadableImage  *thumbnail;
 
+- (void)releaseImages;
+
 @end

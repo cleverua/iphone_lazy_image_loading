@@ -23,5 +23,6 @@ static NSString *ImageDownloadedNotificationName = @"ImageDownloaded";
 - (id)initWithUrl:(NSString *)url andSize:(CGSize)size;
 - (void)download;
 - (void)imageDownloaded:(NSData *)data;
+- (void)downloadDidFail;
 
 @end

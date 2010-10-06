@@ -251,7 +251,7 @@ static const NSInteger RELOAD_SECTION_INDEX = 2;
   // Relinquish ownership any cached data, images, etc that aren't in use.
   for (FlickrPhoto *photo in self.items) 
   {
-    photo.thumbnail.image = nil;
+    [photo releaseImages];
   }
 }
 

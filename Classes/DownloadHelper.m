@@ -16,7 +16,7 @@
   NSLog(@"initWithImage");
   if (self = [super init]) {
     image = downloadableImage;
-    [image retain];
+  //  [image retain];
   }
   return self;
 }
@@ -27,13 +27,16 @@
   
   downloadedData = [[NSMutableData alloc] init];
 
-  NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:image.url]];
+  NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:image.url]
+                                                cachePolicy:NSURLRequestReturnCacheDataElseLoad
+                                            timeoutInterval:240];
   connection = [[NSURLConnection alloc]initWithRequest:request delegate:self];
   [request release];  
 }
 
 - (void)cancel
 {
+  image = nil;
   [connection cancel];
 }
 
@@ -47,22 +50,31 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)conn
 {
   NSLog(@"connectionDidFinishLoading");
-  
-  [image imageDownloaded:downloadedData];
+  if (image != nil) 
+  {
+    [image imageDownloaded:downloadedData];
+  }
 }
 
 - (void)connection:(NSURLConnection *)conn didFailWithError:(NSError *)error
 {
   NSLog(@"connection:didFailWithError");
-  
+  if (image != nil) 
+  {
+    [image downloadDidFail];
+  }
 }
 
 #pragma mark Memory management
 
 - (void)dealloc
 {
-  [image release];
-  
+  if (connection != nil)
+  {
+    [connection cancel];
+    [connection release];
+  }
+  [downloadedData release];
   [super dealloc];
 }
 

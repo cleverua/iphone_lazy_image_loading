@@ -27,13 +27,19 @@ static NSString * photoFormatString = @"http://farm%@.static.flickr.com/%@/%@_%@
   if (thumbnail == nil) 
   {
     NSString *thumbUrl = [[NSString alloc] initWithFormat:photoFormatString, self.farm, self.server, self.photoId, self.secret, @"s"];
-
     thumbnail = [[DownloadableImage alloc] initWithUrl:thumbUrl andSize:CGSizeMake(75.0, 75.0)];
-
-    thumbnail.url = thumbUrl;
+    [thumbUrl release];
   }
   return thumbnail;
 }
+
+- (void)releaseImages
+{
+  if (thumbnail.image != nil) {
+    thumbnail.image = nil;
+  }
+}
+
 
 #pragma mark PrivateMethods
 
