@@ -7,10 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FlickrPhoto.h"
 
 
 @interface DetailsController : UITableViewController 
 {
+  FlickrPhoto *photo;
 }
+
+@property (nonatomic, retain) FlickrPhoto *photo;
 
 @end

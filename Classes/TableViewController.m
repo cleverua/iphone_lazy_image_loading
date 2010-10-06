@@ -193,7 +193,7 @@ static const NSInteger RELOAD_SECTION_INDEX = 2;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
   DetailsController *detailsController = [[DetailsController alloc] initWithNibName:nil bundle:nil];
-  
+  detailsController.photo = [items objectAtIndex:indexPath.row];
   // ...
   // Pass the selected object to the new view controller.
   [self.navigationController pushViewController:detailsController animated:YES];

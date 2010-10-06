@@ -7,10 +7,11 @@
 //
 
 #import "DetailsController.h"
-
+#import "DownloadableCell.h"
 
 @implementation DetailsController
 
+@synthesize photo;
 
 #pragma mark -
 #pragma mark Initialization
@@ -77,25 +78,29 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return 2;
+    return 1;
 }
 
 
 // Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath 
+{    
+  static NSString *CellIdentifier = @"Cell";
     
-    static NSString *CellIdentifier = @"Cell";
+  DownloadableCell *cell = (DownloadableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+  if (cell == nil) {
+    cell = [[[DownloadableCell alloc] initWithTableView: self.tableView style:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+  }
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-    }
-    
-    // Configure the cell...
-    
-    return cell;
+  // Configure the cell...
+  cell.thumbnail = photo.medium;
+  return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  return 300;
+}
 
 /*
 // Override to support conditional editing of the table view.
@@ -165,6 +170,7 @@
 - (void)viewDidUnload {
     // Relinquish ownership of anything that can be recreated in viewDidLoad or on demand.
     // For example: self.myOutlet = nil;
+  self.photo = nil;
 }
 
 

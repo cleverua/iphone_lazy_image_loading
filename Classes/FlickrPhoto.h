@@ -18,6 +18,7 @@
   NSString  *farm;
   
   DownloadableImage  *thumbnail;
+  DownloadableImage  *medium;
 }
 
 @property (nonatomic, retain) NSString  *photoId;
@@ -27,6 +28,7 @@
 @property (nonatomic, retain) NSString  *farm;
 
 @property (nonatomic, readonly) DownloadableImage  *thumbnail;
+@property (nonatomic, readonly) DownloadableImage  *medium;
 
 - (void)releaseImages;
 

@@ -25,6 +25,7 @@
 
 - (void)download
 {
+  NSLog(@"download  %@", self.url);
   DownloadHelper * downloader = [DELEGATE.downloaders objectForKey:self.url];
   if (downloader == nil) {
     downloader = [[DownloadHelper alloc] initWithDownloadedImage:self];    
