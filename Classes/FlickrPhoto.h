@@ -12,7 +12,6 @@
 @interface FlickrPhoto : NSObject
 {
   NSString  *photoId;
-  NSString  *owner;
   NSString  *secret;
   NSString  *server;
   NSString  *title;
@@ -22,7 +21,6 @@
 }
 
 @property (nonatomic, retain) NSString  *photoId;
-@property (nonatomic, retain) NSString  *owner;
 @property (nonatomic, retain) NSString  *secret;
 @property (nonatomic, retain) NSString  *server;
 @property (nonatomic, retain) NSString  *title;

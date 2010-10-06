@@ -18,7 +18,7 @@
 
 @implementation FlickrPhoto
 
-@synthesize farm, photoId, owner, secret, server, title;
+@synthesize farm, photoId, secret, server, title;
 
 static NSString * photoFormatString = @"http://farm%@.static.flickr.com/%@/%@_%@_%@.jpg";
 
