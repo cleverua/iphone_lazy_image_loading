@@ -12,6 +12,7 @@
 #import "LazyImagesAppDelegate.h"
 #import "DownloadableCell.h"
 #import "FlickrPhoto.h"
+#import "DetailsController.h"
 
 @interface TableViewController(PrivateMethods)
 
@@ -35,6 +36,7 @@ static const NSInteger RELOAD_SECTION_INDEX = 2;
 {
   [super viewDidLoad];
 
+  self.title = @"Flickr";
   items = [[NSMutableArray alloc] init];
 }
 
@@ -111,6 +113,7 @@ static const NSInteger RELOAD_SECTION_INDEX = 2;
     if (cell == nil) {
       cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NextPageCellIdentifier] autorelease];
       cell.textLabel.text = @"Loading Next Page...";
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     NSLog(@"Loading Next Page...");
     
@@ -125,6 +128,7 @@ static const NSInteger RELOAD_SECTION_INDEX = 2;
     if (cell == nil) {
       cell = [[[DownloadableCell alloc] initWithTableView:self.tableView style:UITableViewCellStyleDefault reuseIdentifier:FlickrCellIdentifier] autorelease];
       cell.textLabel.numberOfLines = 3;
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
 
     FlickrPhoto *photo = [items objectAtIndex:indexPath.row];
@@ -186,15 +190,14 @@ static const NSInteger RELOAD_SECTION_INDEX = 2;
 #pragma mark -
 #pragma mark Table view delegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-	/*
-	 <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-	 [self.navigationController pushViewController:detailViewController animated:YES];
-	 [detailViewController release];
-	 */
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
+{
+  DetailsController *detailsController = [[DetailsController alloc] initWithNibName:nil bundle:nil];
+  
+  // ...
+  // Pass the selected object to the new view controller.
+  [self.navigationController pushViewController:detailsController animated:YES];
+  [detailsController release];
 }
 
 #pragma mark -

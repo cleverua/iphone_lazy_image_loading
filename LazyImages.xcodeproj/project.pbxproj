@@ -23,6 +23,7 @@
 		FA78E53B125B7EE8007C14D6 /* DownloadHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = FA78E53A125B7EE8007C14D6 /* DownloadHelper.m */; };
 		FAB21287125CAC370082D283 /* DownloadableImage.m in Sources */ = {isa = PBXBuildFile; fileRef = FAB21286125CAC370082D283 /* DownloadableImage.m */; };
 		FAB2128D125CACAC0082D283 /* DownloadableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FAB2128C125CACAC0082D283 /* DownloadableCell.m */; };
+		FAB21524125D17420082D283 /* DetailsController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAB21523125D17420082D283 /* DetailsController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,8 @@
 		FAB21286125CAC370082D283 /* DownloadableImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DownloadableImage.m; sourceTree = "<group>"; };
 		FAB2128B125CACAC0082D283 /* DownloadableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DownloadableCell.h; sourceTree = "<group>"; };
 		FAB2128C125CACAC0082D283 /* DownloadableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DownloadableCell.m; sourceTree = "<group>"; };
+		FAB21522125D17420082D283 /* DetailsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailsController.h; sourceTree = "<group>"; };
+		FAB21523125D17420082D283 /* DetailsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailsController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +156,8 @@
 			children = (
 				28C286DF0D94DF7D0034E888 /* TableViewController.h */,
 				28C286E00D94DF7D0034E888 /* TableViewController.m */,
+				FAB21522125D17420082D283 /* DetailsController.h */,
+				FAB21523125D17420082D283 /* DetailsController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -249,6 +254,7 @@
 				FA78E53B125B7EE8007C14D6 /* DownloadHelper.m in Sources */,
 				FAB21287125CAC370082D283 /* DownloadableImage.m in Sources */,
 				FAB2128D125CACAC0082D283 /* DownloadableCell.m in Sources */,
+				FAB21524125D17420082D283 /* DetailsController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
